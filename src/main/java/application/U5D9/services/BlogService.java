@@ -5,6 +5,7 @@ import application.U5D9.entities.PostBlog;
 import application.U5D9.entities.User;
 import application.U5D9.exceptions.NotBlogFoundException;
 import application.U5D9.exceptions.NotUserFoundException;
+import application.U5D9.payloads.NewBlogPostDTO;
 import application.U5D9.repositories.BlogRepository;
 import application.U5D9.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +24,21 @@ public class BlogService {
     private UserRepository userRepository;
 
 
-    public Blog save(PostBlog body){
-        body.setCover("https://picsum.photos/200/300");
-        User autorPost = userRepository.findById(body.getUtente_id()).orElseThrow(() -> new NotUserFoundException(body.getUtente_id()));
-            Blog newBlog = new Blog().builder()
-                    .blogCategory(body.getBlogCategory())
-                    .cover(body.getCover())
-                    .contenuto(body.getContenuto())
-                    .titolo(body.getTitolo()).utente(autorPost)
-                    .tempoDiLettura(body.getTempoDiLettura())
+    public Blog save(NewBlogPostDTO body){
+        User autorPost = userRepository.findById(body.utente_id()).orElseThrow(() -> new NotUserFoundException(body.utente_id()));
+
+
+
+
+
+
+
+        Blog newBlog = new Blog().builder()
+                    .blogCategory(body.blogCategory())
+                    .cover(body.cover() == null ? "https://picsum.photos/200/300" : body.cover())
+                    .contenuto(body.contenuto())
+                    .titolo(body.titolo()).utente(autorPost)
+                    .tempoDiLettura(body.tempoDiLettura())
                     .build();
 
 

@@ -2,10 +2,14 @@ package application.U5D9.controllers;
 
 import application.U5D9.entities.Blog;
 import application.U5D9.entities.PostBlog;
+import application.U5D9.exceptions.BadRequestException;
+import application.U5D9.payloads.NewBlogPostDTO;
 import application.U5D9.services.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -30,8 +34,13 @@ public class BlogController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public Blog saveBlog(@RequestBody PostBlog body){
-        return blogService.save(body);
+    public Blog saveBlog(@RequestBody @Validated NewBlogPostDTO body, BindingResult validation ){
+        if(validation.hasErrors()){
+            throw new BadRequestException(validation.getAllErrors());
+        }else {
+            return blogService.save(body);
+        }
+
     }
 
 

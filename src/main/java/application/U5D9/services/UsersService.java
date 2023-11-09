@@ -2,7 +2,9 @@ package application.U5D9.services;
 
 import application.U5D9.entities.Blog;
 import application.U5D9.entities.User;
+import application.U5D9.exceptions.BadRequestException;
 import application.U5D9.exceptions.NotUserFoundException;
+import application.U5D9.payloads.NewUserDTO;
 import application.U5D9.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -20,10 +23,21 @@ public class UsersService {
     private UserRepository userRepo;
 
 
-    public User save(User body){
-        body.setUserPicture("https://ui-avatars.com/api/?name=" + body.getNome() + "+" + body.getCognome());
-        userRepo.save(body);
-        return body;
+    public User save(NewUserDTO body) throws IOException {
+        userRepo.findByEmail(body.email()).ifPresent( user -> {
+            throw new BadRequestException("L'email " + user.getEmail() + " è già utilizzata!");
+        });
+
+        User newUser = new User();
+
+        newUser.setCognome(body.cognome());
+        newUser.setNome(body.nome());
+        newUser.setDataDiNascita(body.dataDiNascita());
+        newUser.setEmail(body.email());
+        newUser.setUserPicture("https://ui-avatars.com/api/?name=" + body.nome().replace(" " , "") + "+" + body.cognome().replace(" " , ""));
+
+
+        return userRepo.save(newUser);
     }
 
 
