@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -80,6 +81,12 @@ public class UserController {
     @GetMapping("/{id}/blogs")
     public List<Blog> getUserBlog(@PathVariable int id){
         return usersService.getUserBlog(id);
+    }
+
+    @PostMapping("/{id}/upload")
+    public String changeUserImg(@PathVariable int id , @RequestParam("avatar")  MultipartFile body) throws IOException{
+        return usersService.uploadPicture(id, body);
+
     }
 
 
